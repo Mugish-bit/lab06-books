@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Display Book Records</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; max-width: 600px; }
+    select { padding: 8px; font-size: 16px; margin-bottom: 20px; width: 100%; }
+    #bookDetails { border: 1px solid #ccc; padding: 20px; border-radius: 8px; background-color: #f9f9f9; }
+  </style>
+</head>
+<body>
+  <h1>Book Records</h1>
+
+  <label for="bookSelect">Select a book title:</label>
+  <select id="bookSelect">
+    <option value="">-- Select a book --</option>
+  </select>
+
+  <div id="bookDetails">
+    <p>Please select a book to view its details.</p>
+  </div>
+
+  <script>
+    // Using your exact GitHub raw link
+    const JSON_URL = 'https://raw.githubusercontent.com/Mugish-bit/lab06-books/refs/heads/main/books.json';
+
+    const bookSelect = document.getElementById('bookSelect');
+    const bookDetails = document.getElementById('bookDetails');
+    let books = [];
+
+    async function loadBooks() {
+      try {
+        const response = await fetch(JSON_URL);
+        const data = await response.json();
+        books = data.books;
+
+        books.forEach(book => {
+          const option = document.createElement('option');
+          option.value = book.title;
+          option.textContent = book.title;
+          bookSelect.appendChild(option);
+        });
+      } catch (error) {
+        bookDetails.innerHTML = '<p>Error loading data. Check the console.</p>';
+        console.error(error);
+      }
+    }
+
+    bookSelect.addEventListener('change', function() {
+      const selectedTitle = bookSelect.value;
+      if (selectedTitle === '') {
+        bookDetails.innerHTML = '<p>Please select a book to view its details.</p>';
+        return;
+      }
+
+      const selectedBook = books.find(book => book.title === selectedTitle);
+      
+      bookDetails.innerHTML = `
+        <h2>${selectedBook.title}</h2>
+        <p><strong>Author:</strong> ${selectedBook.author}</p>
+        <p><strong>Publication Year:</strong> ${selectedBook.publicationYear}</p>
+        <p><strong>Genres:</strong> ${selectedBook.genres.join(', ')}</p>
+      `;
+    });
+
+    loadBooks();
+  </script>
+</body>
+</html>
